@@ -21,17 +21,19 @@ MongoClient.connect(url,{useUnifiedTopology: true}, (err, client)=>{
   */
   exports.InsertContent = async (matter,title,content,author, response)=>{
 
-    var strAuthor = `${author}`.split(' ');
-    var strTitle = `${title}`.split(' ');
-    var tagsArray = [matter, title, author ].concat(strAuthor).concat(strTitle);
-    var tags = tagsArray.map(str => str.toLowerCase());
+    let strAuthor = `${author}`.split(' ');
+    let strTitle = `${title}`.split(' ');
+    let tagsArray = [matter, title, author ].concat(strAuthor).concat(strTitle);
+    let tags = tagsArray.map(str => str.toLowerCase());
+
+    let strContent = content.trim();
 
     await contentCollection.insertOne(
     {
       _id: shortid.generate(),
       matter: matter,
       title: title,
-      content: content,
+      content: strContent,
       author: author,
       datePublished: Date(),
       tags: tags

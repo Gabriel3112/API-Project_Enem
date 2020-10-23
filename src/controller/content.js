@@ -12,6 +12,7 @@ exports.InsertContent = (request, response)=>{
 exports.SearchContent = (request, response)=>{
   if(request.query.search != null){
     const search = request.query.search;
+
     console.log('Search content with tags');
 
     database.SearchContentWithTags(search, response);

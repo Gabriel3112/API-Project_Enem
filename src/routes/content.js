@@ -5,6 +5,8 @@ const router = express.Router();
 
 router.get('/content', controller.SearchContent);
 
+router.get('/user', controller.ShowUserContent);
+
 router.post('/content', controller.InsertContent);
 
 

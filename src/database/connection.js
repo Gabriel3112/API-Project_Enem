@@ -1,5 +1,4 @@
 const MongoClient = require('mongodb').MongoClient;
-const { response } = require('express');
 const shortid = require('shortid');
 
 const url = process.env.CONNECTION_DATABASE;
@@ -15,11 +14,10 @@ MongoClient.connect(url,{useUnifiedTopology: true}, (err, client)=>{
 
 
 
-
   /*
   * InsertContent = inserir conteúdo no banco de dados
   */
-  exports.InsertContent = async (matter,title,content,author, response)=>{
+  exports.InsertContent = async (UID,matter,title,content,author, response)=>{
 
     let strAuthor = `${author}`.split(' ');
     let strTitle = `${title}`.split(' ');
@@ -28,16 +26,34 @@ MongoClient.connect(url,{useUnifiedTopology: true}, (err, client)=>{
 
     let strContent = content.trim();
 
+    const CheckIDExist = ()=>{
+      var id = shortid.generate();
+      await contentCollection.find({_id: id}).toArray().then((results)=>{
+        results.forEach(result=>{
+          if(result._id == id){
+            id = shortid.generate();
+            return id;
+          }else{
+            return id;
+          }
+        });
+      }).catch((err)=>{
+        console.log(err);
+      });
+    }
+
     await contentCollection.insertOne(
     {
-      _id: shortid.generate(),
+      _id: CheckIDExist(),
+      userUID: UID,
       matter: matter,
       title: title,
       content: strContent,
       author: author,
       datePublished: Date(),
       tags: tags
-    }).then(()=>{
+    }).then((result)=>{
+      console.log(result);
       response.send({message: 'Sending for database'});
     }).catch((err)=>{
       client.close();
@@ -60,6 +76,12 @@ MongoClient.connect(url,{useUnifiedTopology: true}, (err, client)=>{
     await contentCollection.find({tags: searchLowerCase}.toArray().then((result)=>{
       response.send(result);
     }))
+  }
+
+  exports.ShowUserContent = async(UID ,response) =>{
+    await contentCollection.find({userUID: UID}).toArray().then((result)=>{
+      response.send(result);
+    });
   }
   
   

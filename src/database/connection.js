@@ -1,3 +1,5 @@
+const { ObjectID } = require('mongodb');
+
 const MongoClient = require('mongodb').MongoClient;
 
 const url = process.env.CONNECTION_DATABASE;
@@ -34,16 +36,13 @@ MongoClient.connect(url,{useUnifiedTopology: true}, (err, client)=>{
       author: author,
       datePublished: Date(),
       tags: tags
-    }).then((result)=>{
+    }).then(()=>{
       response.status(201);
     });
   }
 
-  /*
-  * SerchContentWithTags = pesquisar conteúdo no banco de dados por tags
-  */
-  exports.ShowAllContent = async (response)=>{
-    await contentCollection.find({}).toArray().then((result)=>{
+  exports.ShowAllContent = async (skip, limit,response)=>{
+    await contentCollection.find({}).skip(skip).limit(limit).then((result)=>{
       response.send(result);
     })
   }
@@ -55,7 +54,8 @@ MongoClient.connect(url,{useUnifiedTopology: true}, (err, client)=>{
   }
 
   exports.DeleteContent = async(id,response)=>{
-    await contentCollection.deleteOne({_id: id}).then(()=>{
+    let oid = new ObjectID(id);
+    await contentCollection.deleteOne({_id: oid}).then(()=>{
       response.status(204);
     });
   }

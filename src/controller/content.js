@@ -10,8 +10,10 @@ exports.InsertContent = (request, response)=>{
   database.InsertContent(UID ,matter, title, content, author, response);
 }
 
-exports.SearchContent = (response)=>{
-  database.ShowAllContent(response);
+exports.SearchContent = (request, response)=>{
+  let skip = request.query.skip;
+  let limit = request.query.limit;
+  database.ShowAllContent(skip, limit,response);
 }
 
 exports.ShowUserContent = (request, response)=>{

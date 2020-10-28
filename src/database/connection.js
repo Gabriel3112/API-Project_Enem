@@ -1,5 +1,4 @@
 const MongoClient = require('mongodb').MongoClient;
-const shortid = require('shortid');
 
 const url = process.env.CONNECTION_DATABASE;
 
@@ -26,25 +25,8 @@ MongoClient.connect(url,{useUnifiedTopology: true}, (err, client)=>{
 
     let strContent = content.trim();
 
-    const CheckIDExist = ()=>{
-      var id = shortid.generate();
-      await contentCollection.find({_id: id}).toArray().then((results)=>{
-        results.forEach(result=>{
-          if(result._id == id){
-            id = shortid.generate();
-            return id;
-          }else{
-            return id;
-          }
-        });
-      }).catch((err)=>{
-        console.log(err);
-      });
-    }
-
     await contentCollection.insertOne(
     {
-      _id: CheckIDExist(),
       userUID: UID,
       matter: matter,
       title: title,
@@ -53,11 +35,7 @@ MongoClient.connect(url,{useUnifiedTopology: true}, (err, client)=>{
       datePublished: Date(),
       tags: tags
     }).then((result)=>{
-      console.log(result);
-      response.send({message: 'Sending for database'});
-    }).catch((err)=>{
-      client.close();
-      throw err;
+      response.status(201);
     });
   }
 
@@ -70,17 +48,15 @@ MongoClient.connect(url,{useUnifiedTopology: true}, (err, client)=>{
     })
   }
 
-  exports.SearchContentWithTags = async(search, response)=>{
-    var searchLowerCase = search.toLowerCase();
-
-    await contentCollection.find({tags: searchLowerCase}.toArray().then((result)=>{
-      response.send(result);
-    }))
-  }
-
   exports.ShowUserContent = async(UID ,response) =>{
     await contentCollection.find({userUID: UID}).toArray().then((result)=>{
       response.send(result);
+    });
+  }
+
+  exports.DeleteContent = async(id,response)=>{
+    await contentCollection.deleteOne({_id: id}).then(()=>{
+      response.status(204);
     });
   }
   

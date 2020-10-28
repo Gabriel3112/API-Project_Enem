@@ -10,22 +10,19 @@ exports.InsertContent = (request, response)=>{
   database.InsertContent(UID ,matter, title, content, author, response);
 }
 
-exports.SearchContent = (request, response)=>{
-  if(request.query.search != null){
-    const search = request.query.search;
-
-    console.log('Search content with tags');
-
-    database.SearchContentWithTags(search, response);
-  }else{
-    console.log('Show all content');
-    database.ShowAllContent(response);
-  }
+exports.SearchContent = (response)=>{
+  database.ShowAllContent(response);
 }
 
 exports.ShowUserContent = (request, response)=>{
-  const UID = request.body.UID;
+  const UID = request.query.UID;
 
   database.ShowUserContent(UID, response);
+}
+
+exports.DeleteContent = (request, response)=>{
+  const id = request.query.id;
+
+  database.DeleteContent(id, response);
 }
 

@@ -3,11 +3,17 @@ const controller = require('../controller/content');
 
 const router = express.Router();
 
+
 router.get('/content', controller.SearchContent);
+
+router.post('/content', controller.InsertContent);
+
+
 
 router.get('/user', controller.ShowUserContent);
 
-router.post('/content', controller.InsertContent);
+router.delete('/user', controller.DeleteContent);
+
 
 
 
